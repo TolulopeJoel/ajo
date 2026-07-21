@@ -142,11 +142,11 @@ export default function Invite({ go }) {
           </div>
         </Field>
 
-        <div className="mt-5 flex flex-wrap items-center gap-2 border-t-[3px] border-ink pt-4">
+        {/* <div className="mt-5 flex flex-wrap items-center gap-2 border-t-[3px] border-ink pt-4">
           <Eyebrow className="mr-1">Try one</Eyebrow>
           <Button size="sm" onClick={() => add(DEMO_SEEDS.clean)}>Clean record</Button>
           <Button size="sm" onClick={() => add(DEMO_SEEDS.flagged)}>Flagged record</Button>
-        </div>
+        </div> */}
       </Card>
 
       <div className="flex items-center justify-between">

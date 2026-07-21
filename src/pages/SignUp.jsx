@@ -90,9 +90,9 @@ export function ConfirmPhone({ phone, onDone, onBack, title = 'Confirm your phon
           </Explain>
         </Caption>
 
-        {IS_MOCK && (
+        {/* {IS_MOCK && (
           <Caption className="text-xs">Demo build: the code is {MOCK_SMS_CODE}.</Caption>
-        )}
+        )} */}
       </Card>
     </div>
   );

@@ -84,14 +84,14 @@ export default function Login({ go }) {
         Create an account instead
       </Button>
 
-      {IS_MOCK && (
+      {/* {IS_MOCK && (
         <Card className="p-5">
           <Eyebrow>Demo sign-in</Eyebrow>
           <Caption className="mt-2">
             {DEMO_SEEDS.organizer} · code {MOCK_PASSWORDS[DEMO_SEEDS.organizer]}
           </Caption>
         </Card>
-      )}
+      )} */}
     </div>
   );
 }

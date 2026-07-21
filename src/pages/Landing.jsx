@@ -54,12 +54,12 @@ export default function Landing({ go }) {
               Sign in
             </Button>
           </div>
-          <button
+          {/* <button
             onClick={() => go('demo')}
             className="font-body text-sm font-bold text-mute underline decoration-line underline-offset-4 focus:outline-none focus-visible:ring-4 focus-visible:ring-mango"
           >
             Judges: open the demo panel
-          </button>
+          </button> */}
         </div>
 
         {/* the signature moment, shown rather than described */}

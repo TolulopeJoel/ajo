@@ -15,6 +15,7 @@ import Withdraw from './pages/Withdraw.jsx';
 import AcceptInvite from './pages/AcceptInvite.jsx';
 import Settings from './pages/Settings.jsx';
 import DemoPanel from './pages/DemoPanel.jsx';
+import Logo from './assets/logo.svg';
 
 /* Member Home is the front door once a circle is open.
    The full roster is one tap away, not the landing screen. */
@@ -83,23 +84,23 @@ function Shell() {
             onClick={() => go('landing')}
             className="flex items-center gap-2 focus:outline-none focus-visible:ring-4 focus-visible:ring-mango"
           >
-            <span className="grid h-8 w-8 place-items-center rounded-full border-[3px] border-ink bg-mango font-display text-sm font-extrabold">A</span>
+            <img src={Logo} alt="Logo" className="grid h-8 w-8 place-items-center rounded-full border-[3px] border-ink bg-mango font-display text-sm font-extrabold" />
             <span className="font-display text-xl font-extrabold tracking-tight">Ajo</span>
           </button>
           <div className="flex items-center gap-2">
-            <button
+            {/* <button
               onClick={() => dispatch({ type: 'set', payload: { motionOff: !motionOff } })}
               aria-pressed={motionOff}
               className="rounded-pill border-[3px] border-ink bg-card px-3 py-1 font-body text-[11px] font-extrabold uppercase tracking-wide focus:outline-none focus-visible:ring-4 focus-visible:ring-mango"
             >
               {motionOff ? 'Motion off' : 'Motion on'}
-            </button>
-            <button
+            </button> */}
+            {/* <button
               onClick={() => go('demo')}
               className="rounded-pill border-[3px] border-ink bg-card px-3 py-1 font-body text-[11px] font-extrabold uppercase tracking-wide focus:outline-none focus-visible:ring-4 focus-visible:ring-mango"
             >
               Demo
-            </button>
+            </button> */}
           </div>
         </div>
       </header>
