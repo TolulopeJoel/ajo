@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { StoreProvider, useStore } from './state/store.jsx';
+import { Button } from './components/kit.jsx';
 import Landing from './pages/Landing.jsx';
 import Login from './pages/Login.jsx';
 import SignUp from './pages/SignUp.jsx';
@@ -71,6 +72,7 @@ function Shell() {
   };
 
   const showNav = !NO_NAV.has(route);
+  const isLanding = route === 'landing';
 
   return (
     <div className={'min-h-screen bg-paper text-ink ' + (motionOff ? 'motion-off' : '')}>
@@ -79,39 +81,47 @@ function Shell() {
       </a>
 
       <header className="sticky top-0 z-30 border-b-[3px] border-ink bg-paper/95 backdrop-blur">
-        <div className="mx-auto flex max-w-md items-center justify-between gap-3 px-4 py-3">
+        <div className={`mx-auto flex items-center justify-between gap-3 px-4 py-3 sm:px-6 ${isLanding ? 'max-w-6xl lg:px-8' : 'max-w-md sm:max-w-lg md:max-w-xl'}`}>
           <button
             onClick={() => go('landing')}
-            className="flex items-center gap-2 focus:outline-none focus-visible:ring-4 focus-visible:ring-mango"
+            className="flex items-center gap-2.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-mango"
           >
-            <img src={Logo} alt="Logo" className="grid h-8 w-8 place-items-center rounded-full border-[3px] border-ink bg-mango font-display text-sm font-extrabold" />
-            <span className="font-display text-xl font-extrabold tracking-tight">Ajo</span>
+            <img src={Logo} alt="Logo" className="grid h-9 w-9 place-items-center rounded-full border-[3px] border-ink bg-mango font-display text-sm font-extrabold" />
+            <span className="font-display text-2xl font-extrabold tracking-tight">Ajo</span>
           </button>
-          <div className="flex items-center gap-2">
-            {/* <button
-              onClick={() => dispatch({ type: 'set', payload: { motionOff: !motionOff } })}
-              aria-pressed={motionOff}
-              className="rounded-pill border-[3px] border-ink bg-card px-3 py-1 font-body text-[11px] font-extrabold uppercase tracking-wide focus:outline-none focus-visible:ring-4 focus-visible:ring-mango"
-            >
-              {motionOff ? 'Motion off' : 'Motion on'}
-            </button> */}
-            {/* <button
-              onClick={() => go('demo')}
-              className="rounded-pill border-[3px] border-ink bg-card px-3 py-1 font-body text-[11px] font-extrabold uppercase tracking-wide focus:outline-none focus-visible:ring-4 focus-visible:ring-mango"
-            >
-              Demo
-            </button> */}
+
+          <div className="flex items-center gap-3">
+            {isLanding ? (
+              <>
+                <button
+                  onClick={() => go('login')}
+                  className="font-body text-sm font-extrabold text-ink hover:underline focus:outline-none focus-visible:ring-4 focus-visible:ring-mango px-2 py-1"
+                >
+                  Sign in
+                </button>
+                <Button size="sm" tone="mango" onClick={() => go('signup')}>
+                  Start a circle
+                </Button>
+              </>
+            ) : (
+              <button
+                onClick={() => go('landing')}
+                className="rounded-pill border-[3px] border-ink bg-card px-3 py-1 font-body text-[11px] font-extrabold uppercase tracking-wide focus:outline-none focus-visible:ring-4 focus-visible:ring-mango"
+              >
+                Back to landing page
+              </button>
+            )}
           </div>
         </div>
       </header>
 
-      <main id="main" className="mx-auto max-w-md px-4 pb-28 pt-5">
+      <main id="main" className={`mx-auto px-4 pb-28 pt-6 sm:px-6 ${isLanding ? 'max-w-6xl lg:px-8 pt-8 sm:pt-12' : 'max-w-md sm:max-w-lg md:max-w-xl'}`}>
         {PAGES[route]}
       </main>
 
       {showNav && (
         <nav className="fixed inset-x-0 bottom-0 z-30 border-t-[3px] border-ink bg-card">
-          <div className="mx-auto grid max-w-md grid-cols-4">
+          <div className="mx-auto grid max-w-md sm:max-w-lg grid-cols-4">
             {TABS.map(([key, label, glyph]) => (
               <button
                 key={key}
