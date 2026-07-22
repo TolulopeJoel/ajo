@@ -26,12 +26,14 @@ function reducer(state, action) {
     case 'set':
       return { ...state, ...action.payload };
     case 'signIn':
-      api.setCurrentUser(action.user);
+      const circleToSet = action.circle || action.user?.circle || state.circle;
+      const membersToSet = action.members || action.user?.members || state.members;
+      api.setCurrentUser(action.user, circleToSet, membersToSet);
       return {
         ...state,
         currentUser: action.user,
-        circle: action.circle || action.user?.circle || state.circle,
-        members: action.members || action.user?.members || state.members,
+        circle: circleToSet,
+        members: membersToSet,
       };
 
     case 'addMember':

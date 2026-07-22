@@ -21,9 +21,26 @@ export const liveApi = {
 
   getCurrentUser: () => currentUser,
   setCurrentUser(user) { currentUser = user; return currentUser; },
-  clearSession() { currentUser = null; post('/session/end'); },
+  clearSession() { currentUser = null; post('/session/end').catch(() => {}); },
+  async restoreSession() {
+    try {
+      const res = await call('/session');
+      if (res && res.id) {
+        currentUser = res;
+        return { user: res, circle: res.circle, members: res.members };
+      }
+    } catch (e) {}
+    currentUser = null;
+    return null;
+  },
 
   async signIn(creds) { currentUser = await post('/session', creds); return currentUser; },
+  async updateProfile(payload) {
+    const res = await post('/session/profile', payload);
+    if (res && res.id) currentUser = res;
+    else if (currentUser && payload.name) currentUser.name = payload.name;
+    return currentUser;
+  },
   changePassword: (payload) => post('/session/password', payload),
 
   sendCode: (phone) => post('/phone/code', { phone }),

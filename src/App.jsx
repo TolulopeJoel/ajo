@@ -33,15 +33,46 @@ const NO_NAV = new Set(['landing', 'login', 'signup', 'accept']);
 const ORGANIZER_ONLY = new Set(['invite', 'create']);
 
 function Shell() {
-  const { motionOff, dispatch, isOrganizer, circle, currentUser } = useStore();
+  const { motionOff, dispatch, isOrganizer, circle, currentUser, api } = useStore();
   const [route, setRoute] = useState('landing');
   const [payload, setPayload] = useState(null);
+  const [initializing, setInitializing] = useState(true);
 
   const go = (next, data = null) => {
     setPayload(data);
     setRoute(next);
+    try { sessionStorage.setItem('ajo_route', next); } catch (e) {}
     window.scrollTo({ top: 0, behavior: motionOff ? 'auto' : 'smooth' });
   };
+
+  useEffect(() => {
+    let mounted = true;
+    async function restore() {
+      try {
+        const session = await api.restoreSession?.();
+        if (mounted && session && session.user) {
+          dispatch({
+            type: 'signIn',
+            user: session.user,
+            circle: session.circle,
+            members: session.members,
+          });
+          const savedRoute = sessionStorage.getItem('ajo_route');
+          if (savedRoute && !NO_NAV.has(savedRoute)) {
+            setRoute(savedRoute);
+          } else {
+            setRoute(session.circle || session.user?.circle ? 'home' : 'create');
+          }
+        }
+      } catch (e) {
+        console.error('Failed to restore session:', e);
+      } finally {
+        if (mounted) setInitializing(false);
+      }
+    }
+    restore();
+    return () => { mounted = false; };
+  }, [api, dispatch]);
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -73,6 +104,17 @@ function Shell() {
 
   const showNav = !NO_NAV.has(route);
   const isLanding = route === 'landing';
+
+  if (initializing) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-paper text-ink">
+        <div className="flex flex-col items-center gap-3">
+          <img src={Logo} alt="Logo" className="h-10 w-10 animate-pulse rounded-full border-[3px] border-ink bg-mango p-1" />
+          <span className="font-display text-lg font-extrabold tracking-tight">Loading Ajo…</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={'min-h-screen bg-paper text-ink ' + (motionOff ? 'motion-off' : '')}>

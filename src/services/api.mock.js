@@ -10,6 +10,7 @@ const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 /** Outstanding deposit timers, so the demo panel can fire them early. */
 const pendingDeposits = new Map();
+const mockAccounts = new Map();
 
 /* ---- session -----------------------------------------------------------
    One "current user" for the whole app. Organizer is never a stored role:
@@ -17,6 +18,18 @@ const pendingDeposits = new Map();
    ---------------------------------------------------------------------- */
 let currentUser = null;
 const passwords = { ...MOCK_PASSWORDS };
+
+const STORAGE_KEY = 'ajo_session';
+
+function saveSession(user, circle, members) {
+  try {
+    if (user) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user, circle, members }));
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  } catch (e) {}
+}
 
 function trustFrom(record) {
   const history = record.history;
@@ -32,11 +45,12 @@ function trustFrom(record) {
 
 function profileFor(phone) {
   const record = MOCK_TRUST_RECORDS[phone];
-  if (record) return { id: 'm_' + phone, phone, name: record.name, trust: trustFrom(record) };
+  if (record) return { id: 'm_' + phone, phone, name: record.name, trust: trustFrom(record), needsName: false };
   return {
     id: 'm_' + phone,
     phone,
-    name: NEW_MEMBER_NAMES[rand(0, NEW_MEMBER_NAMES.length - 1)],
+    name: 'Member ' + phone.slice(-4),
+    needsName: true,
     trust: {
       status: 'new', history: [], missed: 0, rounds: 0, missedRounds: [],
       circlesCompleted: 0, note: 'First circle on Ajo',
@@ -49,8 +63,27 @@ export const mockApi = {
 
   /* ---- session ---- */
   getCurrentUser: () => currentUser,
-  setCurrentUser(user) { currentUser = user; return currentUser; },
-  clearSession() { currentUser = null; },
+  setCurrentUser(user, circle, members) {
+    currentUser = user;
+    saveSession(user, circle, members);
+    return currentUser;
+  },
+  clearSession() {
+    currentUser = null;
+    saveSession(null);
+  },
+  async restoreSession() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        currentUser = parsed.user || null;
+        return parsed;
+      }
+    } catch (e) {}
+    currentUser = null;
+    return null;
+  },
 
   async signIn({ phone, password }) {
     await wait(900);
@@ -58,6 +91,28 @@ export const mockApi = {
       throw new Error('That phone number and code do not match. Check both and try again.');
     }
     currentUser = { ...profileFor(phone), verified: true };
+    saveSession(currentUser);
+    return currentUser;
+  },
+
+  async updateProfile({ name }) {
+    await wait(400);
+    if (!currentUser) throw new Error('Not signed in');
+    currentUser = { ...currentUser, name, needsName: false };
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const members = (parsed.members || []).map((m) =>
+          m.id === currentUser.id || m.phone === currentUser.phone
+            ? { ...m, name, state: 'joined' }
+            : m
+        );
+        saveSession(currentUser, parsed.circle, members);
+        return currentUser;
+      }
+    } catch (e) {}
+    saveSession(currentUser);
     return currentUser;
   },
 
@@ -89,6 +144,7 @@ export const mockApi = {
     }
     passwords[phone] = MOCK_SMS_CODE;
     currentUser = { ...profileFor(phone), name: name || profileFor(phone).name, verified: true };
+    saveSession(currentUser);
     return currentUser;
   },
 
@@ -109,13 +165,18 @@ export const mockApi = {
     };
   },
 
-  async createVirtualAccount(memberName, circleName) {
+  async createVirtualAccount(memberName, circleName, memberId) {
+    if (memberId && mockAccounts.has(memberId)) {
+      return mockAccounts.get(memberId);
+    }
     await wait(900);
-    return {
+    const acct = {
       accountNumber: String(rand(1000000000, 9999999999)),
       bankName: MOCK_BANKS[rand(0, MOCK_BANKS.length - 1)],
       accountName: `${memberName} / AJO / ${String(circleName || 'CIRCLE').toUpperCase().slice(0, 15)}`,
     };
+    if (memberId) mockAccounts.set(memberId, acct);
+    return acct;
   },
 
   /* ---- money movement ---- */
