@@ -105,10 +105,10 @@ function Shell() {
               </>
             ) : (
               <button
-                onClick={() => go('landing')}
+                onClick={() => go('settings')}
                 className="rounded-pill border-[3px] border-ink bg-card px-3 py-1 font-body text-[11px] font-extrabold uppercase tracking-wide focus:outline-none focus-visible:ring-4 focus-visible:ring-mango"
               >
-                Back to landing page
+                Settings
               </button>
             )}
           </div>

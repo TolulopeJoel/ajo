@@ -68,7 +68,8 @@ export default function Fund({ go }) {
     if (membersWithoutAccounts.length > 0 && circle) {
       setCreating(true);
       Promise.all(membersWithoutAccounts.map(async (m) => {
-        const acct = await api.createVirtualAccount(m.name, circle.name);
+        const acct = await api.createVirtualAccount(m.name, circle.name, m.id);
+
         return { memberId: m.id, account: acct };
       })).then((results) => {
         if (!alive) return;

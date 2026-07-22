@@ -35,7 +35,8 @@ export const liveApi = {
   createCircle: (details) => post('/circles', details),
   addMember: (circleId, member) => post('/circles/' + circleId + '/members', { member }),
   getUserCircle: () => call('/user/circle'),
-  createVirtualAccount: (memberName, circleName) => post('/circles/account', { memberName, circleName }),
+  createVirtualAccount: (memberName, circleName, memberId) => post('/circles/account', { memberName, circleName, memberId }),
+
 
 
   watchDeposit(memberId, onReceived) {
