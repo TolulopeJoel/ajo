@@ -20,15 +20,15 @@ export default function Login({ go }) {
     setError('');
     try {
       const user = await api.signIn({ phone, password });
-      dispatch({ type: 'signIn', user });
-      // One circle in the demo data, so go straight in rather than
-      // making anyone pick from a list of one.
-      go(circle ? 'home' : 'create');
+      const circleToLoad = user?.circle || circle;
+      dispatch({ type: 'signIn', user, circle: user?.circle, members: user?.members });
+      go(circleToLoad ? 'home' : 'create');
     } catch (e) {
       setError(e.message);
     }
     setBusy(false);
   }
+
 
   if (resetting) {
     return (

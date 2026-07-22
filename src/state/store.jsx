@@ -27,7 +27,13 @@ function reducer(state, action) {
       return { ...state, ...action.payload };
     case 'signIn':
       api.setCurrentUser(action.user);
-      return { ...state, currentUser: action.user };
+      return {
+        ...state,
+        currentUser: action.user,
+        circle: action.circle || action.user?.circle || state.circle,
+        members: action.members || action.user?.members || state.members,
+      };
+
     case 'addMember':
       if (state.members.some((m) => m.phone === action.member.phone)) return state;
       return { ...state, members: reindex([...state.members, action.member]) };

@@ -33,7 +33,10 @@ export const liveApi = {
   lookupMember: (phone) => call('/members/' + phone + '/trust'),
 
   createCircle: (details) => post('/circles', details),
+  addMember: (circleId, member) => post('/circles/' + circleId + '/members', { member }),
+  getUserCircle: () => call('/user/circle'),
   createVirtualAccount: (memberName, circleName) => post('/circles/account', { memberName, circleName }),
+
 
   watchDeposit(memberId, onReceived) {
     const source = new EventSource(BASE + '/deposits/' + memberId + '/stream');

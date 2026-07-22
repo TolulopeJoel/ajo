@@ -137,11 +137,16 @@ export default function Invite({ go }) {
     try {
       const found = await api.lookupMember(digits);
       setPending((p) => p.filter((x) => x.id !== id));
+      const newMember = { ...found, state: 'invited', funded: false, autoPay: false, collateral: 0, collected: false };
       dispatch({
         type: 'addMember',
-        member: { ...found, state: 'invited', funded: false, autoPay: false, collateral: 0, collected: false },
+        member: newMember,
       });
+      if (circle?.id && api.addMember) {
+        api.addMember(circle.id, newMember).catch(() => {});
+      }
       if (liveRef.current) liveRef.current.textContent = `${found.name} invited. ${trustHeadline(found.trust)}.`;
+
     } catch {
       setPending((p) => p.map((x) => (x.id === id
         ? { ...x, status: 'error', error: 'That check did not go through. Try the number again.' } : x)));
